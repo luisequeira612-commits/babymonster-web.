@@ -4,7 +4,7 @@ import pandas as pd
 
 st.title("🔥 BABYMONSTER Live Stats")
 
-# 1. Configuración
+# Configuración de YouTube
 API_KEY = "AIzaSyDxzjnwjNf8dRo90y4Yopwr909q_l7qalc"
 VIDEOS = {
     "SHEESH": "2wA_b6asW8Y",
@@ -21,20 +21,20 @@ def get_data():
     datos = []
     for item in res['items']:
         v_id = item['id']
-        # Buscamos el nombre de la canción
         nombre_cancion = next((k for k, v in VIDEOS.items() if v == v_id), "N/A")
-        # GUARDAMOS CON ESTOS NOMBRES EXACTOS
         datos.append({
             "Cancion": nombre_cancion,
             "Vistas": int(item['statistics']['viewCount'])
         })
     return pd.DataFrame(datos)
 
-# 2. El Botón Mágico
+# Botón de ejecución
 if st.button('🚀 CARGAR VISTAS REALES'):
     df = get_data()
-    st.subheader("Gráfico de Vistas")
-    # USAMOS LOS MISMOS NOMBRES DE ARRIBA
+    
+    st.subheader("Gráfico de Popularidad")
+    # Usamos nombres fijos para evitar el KeyError
     st.bar_chart(data=df, x="Cancion", y="Vistas")
-    st.subheader("Tabla Detallada")
+    
+    st.subheader("Tabla de Datos")
     st.write(df)
