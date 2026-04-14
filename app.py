@@ -27,40 +27,47 @@ VIDEOS = {
     "SHEESH": "2wA_b6asW8Y",
     "BATTER UP": "olDWmC0m0u0",
     "FOREVER": "9H77pG8vE6Q",
-    "DRIP": "jM9uS6UuXk8",
-    "CLIK CLAK": "pS_pYf8-k80"
+    "DRIP": "jM9uS6UuXk8"
 }
 
-# --- OBTENER DATOS ---
+# --- FUNCIÓN PRINCIPAL (CORREGIDA) ---
 @st.cache_data(ttl=300)
 def get_data():
     try:
         ids = ",".join(VIDEOS.values())
         res = yt.videos().list(part="statistics,snippet", id=ids).execute()
+        
         datos = []
         for item in res['items']:
             v_id = item['id']
             nombre = next((k for k, v in VIDEOS.items() if v == v_id), "N/A")
             vistas = int(item['statistics'].get('viewCount', 0))
-            datos.append({"Canción": nombre, "Vistas": vistas})
+
+            datos.append({
+                "Canción": nombre,
+                "Vistas": vistas
+            })
+
         return pd.DataFrame(datos)
-    
-except Exception as e:
-    st.error("Error al conectar con YouTube")
-    st.write(e)
-    return pd.DataFrame()
-# --- UI HEADER ---
+
+    except Exception as e:
+        st.error("Error al conectar con YouTube")
+        st.write(e)
+        return pd.DataFrame()
+
+# --- HEADER ---
 st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>💎 BABYMONSTER Global Analytics</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Datos en tiempo real</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# --- LOADING ---
-with st.spinner("Cargando analíticas en tiempo real..."):
+# --- CARGA ---
+with st.spinner("Cargando datos..."):
     df = get_data()
 
+# --- CONTENIDO ---
 if not df.empty:
 
-    # --- FILTRO ---
+    # FILTRO
     limite = filtro_vistas * 1_000_000
     df_filtrado = df[df["Vistas"] >= limite]
 
@@ -72,7 +79,7 @@ if not df.empty:
 
     st.caption(f"Mostrando {len(df_filtrado)} de {len(df)} videos")
 
-    # --- RANKING SEGURO ---
+    # RANKING
     df_rank = df.sort_values("Vistas", ascending=False)
     top_song = df_rank.iloc[0]
 
@@ -84,59 +91,36 @@ if not df.empty:
 
     total_vistas = df["Vistas"].sum()
 
-    # --- MÉTRICAS ---
+    # MÉTRICAS
     m1, m2, m3 = st.columns(3)
     m1.metric("📈 Vistas Totales", format_num(total_vistas))
     m2.metric("🏆 #1", top_song["Canción"])
     m3.metric("🔥 Ventaja", format_num(diff))
 
-    # --- DESTACADO ---
-    st.markdown(
-        f"## 🥇 {top_song['Canción']} — {format_num(top_song['Vistas'])} vistas"
-    )
+    # DESTACADO
+    st.markdown(f"## 🥇 {top_song['Canción']} — {format_num(top_song['Vistas'])} vistas")
 
-    # --- PROGRESS ---
+    # PROGRESS
     max_views = df["Vistas"].max()
     if max_views > 0:
         st.progress(top_song["Vistas"] / max_views)
 
     st.markdown("---")
 
-    # --- GRÁFICO ---
+    # GRÁFICO
     st.subheader("📊 Ranking de Popularidad")
     st.bar_chart(df_sorted.set_index("Canción"))
 
-    # --- GOD MODE: VIEWS POR SEGUNDO ---
-    if "prev_df" not in st.session_state:
-        st.session_state.prev_df = df
-
-    prev_df = st.session_state.prev_df
-
-    try:
-        df_merge = df.merge(prev_df, on="Canción", suffixes=("", "_prev"))
-        df_merge["Views/s"] = (df_merge["Vistas"] - df_merge["Vistas_prev"]) / 300
-
-        st.subheader("⚡ Crecimiento (Views por segundo)")
-        st.dataframe(
-            df_merge[["Canción", "Views/s"]].style.format({"Views/s": "{:.2f}"}),
-            use_container_width=True,
-            hide_index=True
-        )
-    except:
-        pass
-
-    st.session_state.prev_df = df
-
-    # --- TABLA ---
+    # TABLA
     st.subheader("📝 Datos completos")
     st.dataframe(df_sorted, use_container_width=True, hide_index=True)
 
-    # --- REFRESH ---
+    # BOTÓN REFRESH
     if st.sidebar.button("🔄 Actualizar ahora"):
         st.cache_data.clear()
         st.rerun()
 
-    # --- AUTO REFRESH ---
+    # AUTO REFRESH
     if auto_refresh:
         st.cache_data.clear()
         st.rerun()
