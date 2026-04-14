@@ -44,10 +44,11 @@ def get_data():
             vistas = int(item['statistics'].get('viewCount', 0))
             datos.append({"Canción": nombre, "Vistas": vistas})
         return pd.DataFrame(datos)
-    except Exception as e:
-        st.error(f"Error al conectar con YouTube: {e}")
-        return pd.DataFrame()
-
+    
+except Exception as e:
+    st.error("Error al conectar con YouTube")
+    st.write(e)
+    return pd.DataFrame()
 # --- UI HEADER ---
 st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>💎 BABYMONSTER Global Analytics</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Datos en tiempo real</p>", unsafe_allow_html=True)
