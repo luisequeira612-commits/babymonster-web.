@@ -12,7 +12,7 @@ filtro_vistas = st.sidebar.slider("Filtrar por mínimo de vistas (M)", 0, 500, 0
 # --- TÍTULO ---
 st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>💎 BABYMONSTER Global Analytics</h1>", unsafe_allow_html=True)
 
-# 🔥 DEBUG SECRETS
+# DEBUG SECRETS
 st.write("DEBUG SECRETS:", st.secrets)
 
 st.markdown("<p style='text-align: center;'>Datos en tiempo real</p>", unsafe_allow_html=True)
@@ -34,7 +34,7 @@ VIDEOS = {
     "DRIP": "jM9uS6UuXk8"
 }
 
-# 🚨 FUNCIÓN SIN TRY/EXCEPT (para ver error real)
+# --- FUNCIÓN SIN TRY/EXCEPT (DEBUG REAL) ---
 @st.cache_data(ttl=300)
 def get_data():
     ids = ",".join(VIDEOS.values())
@@ -44,7 +44,7 @@ def get_data():
         id=ids
     ).execute()
 
-    # 🔥 MOSTRAR RESPUESTA DE LA API
+    # DEBUG API
     st.write("RESPUESTA API:", res)
 
     datos = []
@@ -84,6 +84,25 @@ if not df.empty:
     else:
         diff = 0
 
+    # --- MÉTRICAS (CORREGIDAS) ---
     col1, col2, col3 = st.columns(3)
+
     col1.metric("📈 Vistas Totales", f"{total_vistas:,}".replace(",", "."))
-    col2.metric("🏆 #1", top
+    col2.metric("🏆 #1", top_song["Canción"])
+    col3.metric("🔥 Ventaja", f"{diff:,}".replace(",", "."))
+
+    st.markdown("---")
+
+    # --- GRÁFICO ---
+    st.subheader("📊 Ranking")
+    st.bar_chart(df_sorted.set_index("Canción"))
+
+    # --- TABLA ---
+    st.subheader("📝 Datos")
+    st.dataframe(df_sorted, use_container_width=True, hide_index=True)
+
+else:
+    st.error("No se pudieron cargar los datos")
+
+st.markdown("---")
+st.caption("Dashboard creado por Luis Sequeira 🚀")
