@@ -30,9 +30,9 @@ def get_data():
 
 if st.button('🚀 CARGAR VISTAS REALES'):
     df = get_data()
-    # Gráfico ultra-seguro
     st.subheader("Gráfico de Vistas")
-    st.bar_chart(data=df, x="Single", y="Views")
-    # Tabla para confirmar los datos
+    # Usamos la versión más básica del gráfico para forzar la carga
+    st.bar_chart(df, x="Single", y="Views")
     st.subheader("Tabla de Datos")
     st.write(df)
+    
