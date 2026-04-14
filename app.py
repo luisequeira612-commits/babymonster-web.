@@ -4,7 +4,6 @@ import pandas as pd
 
 st.title("🔥 BABYMONSTER Live Stats")
 
-# Tu llave
 API_KEY = "AIzaSyDxzjnwjNf8dRo90y4Yopwr909q_l7qalc"
 VIDEOS = {
     "SHEESH": "2wA_b6asW8Y",
@@ -21,22 +20,15 @@ def get_data():
     lista_final = []
     for item in res['items']:
         v_id = item['id']
-        # Buscamos el nombre corto
-        nombre = "Video"
-        for k, v in VIDEOS.items():
-            if v == v_id:
-                nombre = k
-        
+        nombre = next((k for k, v in VIDEOS.items() if v == v_id), "N/A")
         lista_final.append({
-            "Video": nombre,
-            "Vistas": int(item['statistics']['viewCount'])
+            "Single": nombre,
+            "Views": int(item['statistics']['viewCount'])
         })
     return pd.DataFrame(lista_final)
 
-if st.button('🔄 Ver Estadísticas Reales'):
+if st.button('🚀 CARGAR VISTAS REALES'):
     df = get_data()
-    # Usamos directamente 'Video' que es lo más sencillo
-    st.bar_chart(df.set_index('Video'))
+    # Aquí está el truco: usamos 'Single' que es nombre nuevo
+    st.bar_chart(df.set_index('Single'))
     st.table(df)
-    
-        
