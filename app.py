@@ -11,10 +11,6 @@ filtro_vistas = st.sidebar.slider("Filtrar por mínimo de vistas (M)", 0, 500, 0
 
 # --- TÍTULO ---
 st.markdown("<h1 style='text-align: center; color: #FF4B4B;'>💎 BABYMONSTER Global Analytics</h1>", unsafe_allow_html=True)
-
-# DEBUG SECRETS
-st.write("DEBUG SECRETS:", st.secrets)
-
 st.markdown("<p style='text-align: center;'>Datos en tiempo real</p>", unsafe_allow_html=True)
 st.markdown("---")
 
@@ -26,34 +22,21 @@ def get_yt_client():
 
 yt = get_yt_client()
 
-# --- VIDEOS (CORREGIDOS) ---
+# --- VIDEOS (SOLO 2 PARA TEST) ---
 VIDEOS = {
     "SHEESH": "2wA_b6YHjqQ",
-    "Stuck In The Middle": "Zp-Jhuhq0bQ",
-    "BATTER UP": "olDWm2veCrM",
-    "Dream": "eJCHKjt0MPw",
-    "Live Performance": "wlHwjkYpSr0",
-    "Dance Practice": "yd_uG3TtREs",
-    "Performance Video": "xn8mQqz2xmM",
-    "Outro": "GsV1i0QHi-o",
-    "Behind The Scenes": "o0oW3lPoOXM",
-    "Special Clip": "XShaIZs7J7M",
-    "Stage Mix": "1kXLsrun51s",
-    "Extra Video": "SbdOIdg2McI"
+    "BATTER UP": "olDWm2veCrM"
 }
 
-# --- FUNCIÓN (DEBUG REAL) ---
+# --- FUNCIÓN ---
 @st.cache_data(ttl=300)
 def get_data():
     ids = ",".join(VIDEOS.values())
-    
+
     res = yt.videos().list(
         part="statistics,snippet",
         id=ids
     ).execute()
-
-    # DEBUG API (puedes quitar esto luego)
-    st.write("RESPUESTA API:", res)
 
     datos = []
     for item in res['items']:
@@ -92,20 +75,16 @@ if not df.empty:
     else:
         diff = 0
 
-    # --- MÉTRICAS ---
     col1, col2, col3 = st.columns(3)
-
     col1.metric("📈 Vistas Totales", f"{total_vistas:,}".replace(",", "."))
     col2.metric("🏆 #1", top_song["Canción"])
     col3.metric("🔥 Ventaja", f"{diff:,}".replace(",", "."))
 
     st.markdown("---")
 
-    # --- GRÁFICO ---
     st.subheader("📊 Ranking de Popularidad")
     st.bar_chart(df_sorted.set_index("Canción"))
 
-    # --- TABLA ---
     st.subheader("📝 Datos completos")
     st.dataframe(df_sorted, use_container_width=True, hide_index=True)
 
