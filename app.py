@@ -27,8 +27,12 @@ def get_data():
         })
     return pd.DataFrame(lista_final)
 
+
 if st.button('🚀 CARGAR VISTAS REALES'):
     df = get_data()
-    # Aquí está el truco: usamos 'Single' que es nombre nuevo
-    st.bar_chart(df.set_index('Single'))
-    st.table(df)
+    # Gráfico ultra-seguro
+    st.subheader("Gráfico de Vistas")
+    st.bar_chart(data=df, x="Single", y="Views")
+    # Tabla para confirmar los datos
+    st.subheader("Tabla de Datos")
+    st.write(df)
