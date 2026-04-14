@@ -2,7 +2,6 @@ import streamlit as st
 import googleapiclient.discovery
 import pandas as pd
 
-st.set_page_config(page_title="BABYMONSTER Stats", page_icon="🔥")
 st.title("🔥 BABYMONSTER Live Stats")
 
 # Tu llave
@@ -19,23 +18,25 @@ yt = googleapiclient.discovery.build("youtube", "v3", developerKey=API_KEY)
 def get_data():
     ids = ",".join(VIDEOS.values())
     res = yt.videos().list(part="statistics,snippet", id=ids).execute()
-    data = []
+    lista_final = []
     for item in res['items']:
-        # Buscamos cuál de nuestros apodos coincide con el ID de YouTube
         v_id = item['id']
-        nombre_corto = next((k for k, v in VIDEOS.items() if v == v_id), "Video")
+        # Buscamos el nombre corto
+        nombre = "Video"
+        for k, v in VIDEOS.items():
+            if v == v_id:
+                nombre = k
         
-        data.append({
-            "Cancion": nombre_corto,
+        lista_final.append({
+            "Video": nombre,
             "Vistas": int(item['statistics']['viewCount'])
         })
-    return pd.DataFrame(data)
+    return pd.DataFrame(lista_final)
 
-if st.button('🔄 Actualizar Estadísticas'):
+if st.button('🔄 Ver Estadísticas Reales'):
     df = get_data()
-    # Usamos 'Cancion' como nombre de columna para que no se pierda
-    st.bar_chart(df.set_index('Cancion')['Vistas'])
+    # Usamos directamente 'Video' que es lo más sencillo
+    st.bar_chart(df.set_index('Video'))
     st.table(df)
-else:
-    st.info("Toca el botón para ver el alcance de las chicas.")
+    
         
