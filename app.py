@@ -4,6 +4,7 @@ import pandas as pd
 
 st.title("🔥 BABYMONSTER Live Stats")
 
+# 1. Configuración
 API_KEY = "AIzaSyDxzjnwjNf8dRo90y4Yopwr909q_l7qalc"
 VIDEOS = {
     "SHEESH": "2wA_b6asW8Y",
@@ -17,22 +18,23 @@ yt = googleapiclient.discovery.build("youtube", "v3", developerKey=API_KEY)
 def get_data():
     ids = ",".join(VIDEOS.values())
     res = yt.videos().list(part="statistics,snippet", id=ids).execute()
-    lista_final = []
+    datos = []
     for item in res['items']:
         v_id = item['id']
-        nombre = next((k for k, v in VIDEOS.items() if v == v_id), "N/A")
-        lista_final.append({
-            "Single": nombre,
-            "Views": int(item['statistics']['viewCount'])
+        # Buscamos el nombre de la canción
+        nombre_cancion = next((k for k, v in VIDEOS.items() if v == v_id), "N/A")
+        # GUARDAMOS CON ESTOS NOMBRES EXACTOS
+        datos.append({
+            "Cancion": nombre_cancion,
+            "Vistas": int(item['statistics']['viewCount'])
         })
-    return pd.DataFrame(lista_final)
+    return pd.DataFrame(datos)
 
-
+# 2. El Botón Mágico
 if st.button('🚀 CARGAR VISTAS REALES'):
     df = get_data()
     st.subheader("Gráfico de Vistas")
-    # Usamos la versión más básica del gráfico para forzar la carga
-    st.bar_chart(df, x="Single", y="Views")
-    st.subheader("Tabla de Datos")
+    # USAMOS LOS MISMOS NOMBRES DE ARRIBA
+    st.bar_chart(data=df, x="Cancion", y="Vistas")
+    st.subheader("Tabla Detallada")
     st.write(df)
-    
