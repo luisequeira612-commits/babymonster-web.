@@ -26,15 +26,23 @@ def get_yt_client():
 
 yt = get_yt_client()
 
-# --- VIDEOS ---
+# --- VIDEOS (CORREGIDOS) ---
 VIDEOS = {
-    "SHEESH": "2wA_b6asW8Y",
-    "BATTER UP": "olDWmC0m0u0",
-    "FOREVER": "9H77pG8vE6Q",
-    "DRIP": "jM9uS6UuXk8"
+    "SHEESH": "2wA_b6YHjqQ",
+    "Stuck In The Middle": "Zp-Jhuhq0bQ",
+    "BATTER UP": "olDWm2veCrM",
+    "Dream": "eJCHKjt0MPw",
+    "Live Performance": "wlHwjkYpSr0",
+    "Dance Practice": "yd_uG3TtREs",
+    "Performance Video": "xn8mQqz2xmM",
+    "Outro": "GsV1i0QHi-o",
+    "Behind The Scenes": "o0oW3lPoOXM",
+    "Special Clip": "XShaIZs7J7M",
+    "Stage Mix": "1kXLsrun51s",
+    "Extra Video": "SbdOIdg2McI"
 }
 
-# --- FUNCIÓN SIN TRY/EXCEPT (DEBUG REAL) ---
+# --- FUNCIÓN (DEBUG REAL) ---
 @st.cache_data(ttl=300)
 def get_data():
     ids = ",".join(VIDEOS.values())
@@ -44,7 +52,7 @@ def get_data():
         id=ids
     ).execute()
 
-    # DEBUG API
+    # DEBUG API (puedes quitar esto luego)
     st.write("RESPUESTA API:", res)
 
     datos = []
@@ -84,7 +92,7 @@ if not df.empty:
     else:
         diff = 0
 
-    # --- MÉTRICAS (CORREGIDAS) ---
+    # --- MÉTRICAS ---
     col1, col2, col3 = st.columns(3)
 
     col1.metric("📈 Vistas Totales", f"{total_vistas:,}".replace(",", "."))
@@ -94,11 +102,11 @@ if not df.empty:
     st.markdown("---")
 
     # --- GRÁFICO ---
-    st.subheader("📊 Ranking")
+    st.subheader("📊 Ranking de Popularidad")
     st.bar_chart(df_sorted.set_index("Canción"))
 
     # --- TABLA ---
-    st.subheader("📝 Datos")
+    st.subheader("📝 Datos completos")
     st.dataframe(df_sorted, use_container_width=True, hide_index=True)
 
 else:
